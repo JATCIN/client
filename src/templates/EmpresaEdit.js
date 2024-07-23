@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 
-function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
+function EditEmpresaModal({ show, handleClose, empresa, fetchEmpresas }) {
   const [formData, setFormData] = useState({
     nombre: '',
     fechaConstitucion: '',
@@ -11,6 +11,18 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
     favorita: false,
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (empresa) {
+      setFormData({
+        nombre: empresa.nombre,
+        fechaConstitucion: empresa.fechaConstitucion ? new Date(empresa.fechaConstitucion).toISOString().substring(0, 10) : '',
+        tipoEmpresa: empresa.tipoEmpresa,
+        comentarios: empresa.comentarios,
+        favorita: empresa.favorita,
+      });
+    }
+  }, [empresa]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -33,12 +45,12 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length === 0) {
       try {
-        await axios.post('http://localhost:5000/empresas', formData);
+        await axios.put(`http://localhost:5000/empresas/${empresa.id}`, formData);
         fetchEmpresas();
         handleClose();
-        alert('Empresa creada exitosamente');
+        alert('Actualización exitosa');
       } catch (error) {
-        console.error('Error creating empresa:', error);
+        console.error('Error updating empresa:', error);
       }
     } else {
       setErrors(validationErrors);
@@ -48,7 +60,7 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Agregar empresa</Modal.Title>
+        <Modal.Title>Editar empresa</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form onSubmit={handleSubmit}>
@@ -128,4 +140,4 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
   );
 }
 
-export default CreateEmpresaModal;
+export default EditEmpresaModal;

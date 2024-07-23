@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import EditEmpresaModal from './EmpresaEdit';
+import DeleteEmpresaModal from './EmpresaDelete';
+import CreateEmpresaModal from './EmpresaForm';
 
 function EmpresaList() {
   const [empresas, setEmpresas] = useState([]);
+  const [selectedEmpresa, setSelectedEmpresa] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
     fetchEmpresas();
@@ -13,18 +19,32 @@ function EmpresaList() {
   const fetchEmpresas = async () => {
     try {
       const response = await axios.get('http://localhost:5000/empresas');
-      const sortedEmpresas = response.data.sort((a, b) => a.nombre.localeCompare(b.nombre));
-      setEmpresas(sortedEmpresas);
+      setEmpresas(response.data);
     } catch (error) {
       console.error('Error fetching empresas:', error);
     }
   };
 
+  const handleEditClick = (empresa) => {
+    setSelectedEmpresa(empresa);
+    setShowEditModal(true);
+  };
+
+  const handleDeleteClick = (empresa) => {
+    setSelectedEmpresa(empresa);
+    setShowDeleteModal(true);
+  };
+
+  const handleCreateClick = () => {
+    setShowCreateModal(true);
+  };
+
   return (
     <div>
-      <div className="d-flex justify-content-between mb-4">
-        <h2>Listado de Empresas</h2>
-        <Button as={Link} to="/agregar-empresa" variant="primary">Agregar Empresa</Button>
+      <div className="d-flex justify-content-end mb-3">
+        <Button variant="primary" onClick={handleCreateClick}>
+          Agregar Empresa
+        </Button>
       </div>
       {empresas.length === 0 ? (
         <p>Sin empresas creadas...</p>
@@ -44,17 +64,41 @@ function EmpresaList() {
               <tr key={empresa.id}>
                 <td>{empresa.nombre}</td>
                 <td>{empresa.tipoEmpresa}</td>
-                <td>{new Date(empresa.fechaConstitucion).toLocaleDateString()}</td>
+                <td>{empresa.fechaConstitucion}</td>
                 <td>{empresa.favorita ? 'Sí' : 'No'}</td>
                 <td>
-                  <Button variant="warning" size="sm" className="me-2">Editar</Button>
-                  <Button variant="danger" size="sm">Eliminar</Button>
+                  <Button variant="warning" onClick={() => handleEditClick(empresa)}>
+                    Editar
+                  </Button>
+                  <Button variant="danger" onClick={() => handleDeleteClick(empresa)}>
+                    Eliminar
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
         </Table>
       )}
+
+      <EditEmpresaModal
+        show={showEditModal}
+        handleClose={() => setShowEditModal(false)}
+        empresa={selectedEmpresa}
+        fetchEmpresas={fetchEmpresas}
+      />
+
+      <DeleteEmpresaModal
+        show={showDeleteModal}
+        handleClose={() => setShowDeleteModal(false)}
+        empresa={selectedEmpresa}
+        fetchEmpresas={fetchEmpresas}
+      />
+
+      <CreateEmpresaModal
+        show={showCreateModal}
+        handleClose={() => setShowCreateModal(false)}
+        fetchEmpresas={fetchEmpresas}
+      />
     </div>
   );
 }
