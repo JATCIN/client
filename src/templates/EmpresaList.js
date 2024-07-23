@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'react-bootstrap';
+import { Table, Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
 import EditEmpresaModal from './EmpresaEdit';
 import DeleteEmpresaModal from './EmpresaDelete';
@@ -47,7 +47,9 @@ function EmpresaList() {
         </Button>
       </div>
       {empresas.length === 0 ? (
-        <p>Sin empresas creadas...</p>
+        <Alert variant="info" className="text-center">
+          Sin empresas creadas...
+        </Alert>
       ) : (
         <Table striped bordered hover>
           <thead>

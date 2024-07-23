@@ -35,6 +35,7 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
       try {
         await axios.post('http://localhost:5000/empresas', formData);
         fetchEmpresas();
+        resetForm(); // Reset form after successful submission
         handleClose();
         alert('Empresa creada exitosamente');
       } catch (error) {
@@ -45,8 +46,24 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
     }
   };
 
+  const resetForm = () => {
+    setFormData({
+      nombre: '',
+      fechaConstitucion: '',
+      tipoEmpresa: '',
+      comentarios: '',
+      favorita: false,
+    });
+    setErrors({});
+  };
+
+  const handleCloseModal = () => {
+    resetForm(); // Reset form when closing the modal
+    handleClose();
+  };
+
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={show} onHide={handleCloseModal}>
       <Modal.Header closeButton>
         <Modal.Title>Agregar empresa</Modal.Title>
       </Modal.Header>
@@ -116,7 +133,7 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
               onChange={handleInputChange}
             />
           </Form.Group>
-          <Button variant="secondary" onClick={handleClose}>
+          <Button variant="secondary" onClick={handleCloseModal}>
             Cancelar
           </Button>
           <Button variant="primary" type="submit">
