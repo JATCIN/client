@@ -12,7 +12,6 @@ function App() {
         <Container className="mt-4">
           <Routes>
             <Route path="/" element={<EmpresaList />} />
-            <Route path="/agregar-empresa" element={<EmpresaForm />} />
           </Routes>
         </Container>
       </div>
