@@ -35,7 +35,7 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
       try {
         await axios.post('http://localhost:5000/empresas', formData);
         fetchEmpresas();
-        resetForm(); // Reset form after successful submission
+        resetForm(); // Reset cuando se hace el guardado 
         handleClose();
         alert('Empresa creada exitosamente');
       } catch (error) {
@@ -58,7 +58,7 @@ function CreateEmpresaModal({ show, handleClose, fetchEmpresas }) {
   };
 
   const handleCloseModal = () => {
-    resetForm(); // Reset form when closing the modal
+    resetForm(); // Resetear cuando se cierra el modal 
     handleClose();
   };
 
